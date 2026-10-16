@@ -1,0 +1,47 @@
+name: Publish NuGet Package
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write      # برای Trusted Publishing و ارتباط بدون رمز با NuGet.org
+  contents: read
+  packages: write      # برای پابلیش کردن تو GitHub Packages
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x  
+
+      - name: Restore dependencies
+        run: dotnet restore MSTKit.MigrationRunner/MSTKit.MigrationRunner.csproj
+
+      - name: Build
+        run: dotnet build MSTKit.MigrationRunner/MSTKit.MigrationRunner.csproj --configuration Release --no-restore
+
+      - name: Pack
+        run: dotnet pack MSTKit.MigrationRunner/MSTKit.MigrationRunner.csproj --configuration Release --no-build -o out
+
+      # Publish to NuGet.org (via Trusted Publishing - No API Key needed!)
+      - name: Publish to NuGet.org
+        run: dotnet nuget push "out/*.nupkg" --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      # Publish to GitHub Packages
+      - name: Publish to GitHub Packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          dotnet nuget push "out/*.nupkg" \
+            --api-key $GITHUB_TOKEN \
+            --source "https://nuget.pkg.github.com/MSTbat/index.json" \
+            --skip-duplicate
