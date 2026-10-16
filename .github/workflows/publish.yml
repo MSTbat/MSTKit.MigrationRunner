@@ -6,9 +6,9 @@ on:
       - main
 
 permissions:
-  id-token: write      # برای Trusted Publishing و ارتباط بدون رمز با NuGet.org
+  id-token: write   
   contents: read
-  packages: write      # برای پابلیش کردن تو GitHub Packages
+  packages: write    
 
 jobs:
   publish:
@@ -32,9 +32,16 @@ jobs:
       - name: Pack
         run: dotnet pack MSTKit.MigrationRunner/MSTKit.MigrationRunner.csproj --configuration Release --no-build -o out
 
-      # Publish to NuGet.org (via Trusted Publishing - No API Key needed!)
+      # Login to NuGet via OIDC
+      - name: NuGet login (OIDC)
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      # Publish to NuGet.org (via Trusted Publishing)
       - name: Publish to NuGet.org
-        run: dotnet nuget push "out/*.nupkg" --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push "out/*.nupkg" --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       # Publish to GitHub Packages
       - name: Publish to GitHub Packages
