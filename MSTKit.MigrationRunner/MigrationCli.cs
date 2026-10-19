@@ -27,10 +27,10 @@ public static class MigrationCli
 
             var connBuilder = new SqlConnectionStringBuilder(settings.ConnectionString);
             
-            AnsiConsole.Write(new Rule("[#3B82F6]Database Setup & Migrations[/]").LeftJustified());
+            AnsiConsole.Write(new Rule("[#3B82F6]MSTKit.MigrationRunner[/] [#94A3B8]• © MST[/]").LeftJustified());
             AnsiConsole.MarkupLine($"[#3B82F6]Target Server   :[/] {connBuilder.DataSource}");
             AnsiConsole.MarkupLine($"[#3B82F6]Target Database :[/] {connBuilder.InitialCatalog}");
-            AnsiConsole.Write(new Rule().RuleStyle("#94A3B8").LeftJustified());
+            AnsiConsole.Write(new Rule().LeftJustified());
 
             EnsureDatabaseExists(settings.ConnectionString, logger);
 
@@ -86,7 +86,9 @@ public static class MigrationCli
         }
         finally
         {
-            if (!Console.IsInputRedirected && !args.Contains("--no-wait"))
+            if (Environment.UserInteractive && !Console.IsInputRedirected
+                                            && !args.Contains("--no-wait")
+                                            && !args.Contains("--auto"))
             {
                 AnsiConsole.WriteLine();
                 AnsiConsole.MarkupLine("[#94A3B8]Press any key to exit...[/]");
@@ -301,11 +303,13 @@ public static class MigrationCli
         };
 
         var safeDbName = dbName.Replace("]", "]]");
+        var safeLiteral = dbName.Replace("'", "''"); 
+
         var sql = $@"
-            IF DB_ID(N'{safeDbName}') IS NULL 
-            BEGIN
-                CREATE DATABASE [{safeDbName}];
-            END";
+    IF DB_ID(N'{safeLiteral}') IS NULL 
+    BEGIN
+        CREATE DATABASE [{safeDbName}];
+    END";
 
         using var connection = new SqlConnection(masterBuilder.ConnectionString);
         using var command = new SqlCommand(sql, connection);
@@ -361,7 +365,8 @@ public static class MigrationCli
                 $"  \"{PersistenceConfigKey}\": {{\n" +
                 $"    \"ConnectionString\": \"Server=YOUR_SERVER;Database=YOUR_DB;User Id=...;Password=...;TrustServerCertificate=True\"\n" +
                 $"  }}\n" +
-                $"}}[/]");
+                $"}}[/]\n\n" +
+                $"[#F59E0B]Developer Note:[/] [#94A3B8]Check your file properties! Ensure [#38BDF8]{AppSettingPath}[/] has 'Copy to Output Directory' set to [#10B981]Copy if newer[/] and not 'Do not copy'.[/]");
         }
 
         var config = new ConfigurationBuilder()
@@ -383,7 +388,8 @@ public static class MigrationCli
                 $"  \"{PersistenceConfigKey}\": {{\n" +
                 $"    \"ConnectionString\": \"Server=YOUR_SERVER;Database=YOUR_DB;...\"\n" +
                 $"  }}\n" +
-                $"}}[/]");
+                $"}}[/]\n\n" +
+                $"[#F59E0B]Developer Note:[/] [#94A3B8]If you recently updated this file, double-check that 'Copy to Output Directory' is set to [#10B981]Copy if newer[/] so your latest changes are actually used.[/]");
         }
 
         return settings;
