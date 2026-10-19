@@ -445,17 +445,14 @@ public class SpectreLogger : ILogger
         else
         {
             var highlightedSql = safeMessage;
-
-            // تراکنش‌ها: موفق‌ها فیروزه‌ای، رول‌بک‌ها نارنجی
+            
             highlightedSql = Regex.Replace(highlightedSql, @"\b(BEGIN TRANSACTION|COMMIT TRANSACTION|Beginning Transaction|Committing Transaction)\b", "[#0EA5E9]$1[/]");
             highlightedSql = Regex.Replace(highlightedSql, @"\b(ROLLBACK TRANSACTION|Rolling back transaction)\b", "[#F59E0B]$1[/]");
             
             highlightedSql = Regex.Replace(highlightedSql, @"\b(CreateTable|AlterTable|CreateColumn|CreateForeignKey|CreateConstraint|CreateIndex)\b", "[#94A3B8]$1[/]");
-
-            // کلمات کلیدی SQL: بنفش
+            
             highlightedSql = Regex.Replace(highlightedSql, @"\b(CREATE TABLE|ALTER TABLE|DROP TABLE|INSERT INTO|PRIMARY KEY|FOREIGN KEY|REFERENCES|CONSTRAINT|NOT NULL|UNIQUE|DEFAULT|VALUES|ON DELETE|ON UPDATE|CASCADE|SET NULL|ASC|DESC)\b", "[#8B5CF6]$1[/]");
             
-            // تایپ‌های دیتابیس: آبی آسمانی
             highlightedSql = Regex.Replace(highlightedSql, @"\b(IDENTITY|NVARCHAR|DATETIME2|DATETIME|DECIMAL|BIGINT|TINYINT|INT)\b", "[#38BDF8]$1[/]");
 
             AnsiConsole.MarkupLine($"    [#94A3B8]{highlightedSql}[/]");

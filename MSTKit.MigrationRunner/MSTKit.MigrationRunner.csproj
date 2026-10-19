@@ -5,13 +5,14 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageId>MSTKit.MigrationRunner</PackageId>
-        <Version>1.0.2</Version> 
+        <Version>1.0.3</Version> 
         <Authors>MSTbat</Authors>
         <Company>MST</Company>
         <Description>A beautiful, Enterprise-grade standalone FluentMigrator runner powered by Spectre.Console.</Description>
         <RepositoryUrl>https://github.com/mstbat/MSTKit.MigrationRunner</RepositoryUrl>
-        <Tags>fluentmigrator;database;spectre-console;cli;migrations</Tags>
+        <Tags>fluentmigrator;database;spectre-console;cli;migrations;sql</Tags>
         <PackageReadmeFile>readme.md</PackageReadmeFile>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
     <ItemGroup>
