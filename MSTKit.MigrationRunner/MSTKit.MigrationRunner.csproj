@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageId>MSTKit.MigrationRunner</PackageId>
-        <Version>1.0.3</Version> 
+        <Version>1.0.4</Version> 
         <Authors>MSTbat</Authors>
         <Company>MST</Company>
         <Description>A beautiful, Enterprise-grade standalone FluentMigrator runner powered by Spectre.Console.</Description>
